@@ -1,0 +1,40 @@
+name: Test PR on Merge
+
+on: pull_request
+
+jobs:
+  test-pr:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/app
+    steps:
+      - name: Checkout App
+        uses: actions/checkout@v3
+      - name: Server | Setup Node and NPM Cache
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: "${{github.workspace}}/server/package-lock.json"
+      - name: Install Dependencies
+        run: npm install
+      - name: Install Layer Dependencies
+        working-directory: ${{ github.workspace }}/server/prisma
+        run: PRISMA_CLI_BINARY_TARGETS=rhel-openssl-1.0.x npm i
+      - name: Test App
+        run: npm run test:pipeline
+      - name: Download Coverage
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: deploy-to-production.yml
+          name: jest-report-main
+          path: ${{ github.workspace }}/app/jest-report-main
+      - name: Jest Coverage Report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          coverage-file: ${{ github.workspace }}/server/coverage/report.json
+          base-coverage-file: ${{ github.workspace }}/server/jest-report-main/report.json
+          annotations: none
+      - name: Check Types & Build Distribution
+        run: npm run build
