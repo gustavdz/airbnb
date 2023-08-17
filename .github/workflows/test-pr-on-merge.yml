@@ -21,12 +21,12 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
-          cache-dependency-path: ./server/package-lock.json
+          cache-dependency-path: ${{ github.workspace }}/server/package-lock.json
       - name: Install Dependencies
         working-directory: ./server
         run: npm install
       - name: Install Layer Dependencies
-        working-directory: ${{ github.workspace }}/server/layers/prisma
+        working-directory: ${{ github.workspace }}/server/prisma
         run: PRISMA_CLI_BINARY_TARGETS=rhel-openssl-1.0.x npm i
       - name: Build Distribution
         working-directory: ./server
