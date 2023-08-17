@@ -1,0 +1,22 @@
+name: airbnb - Deploy to Production
+
+concurrency: deploy_airbnb
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-reviews:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+      id-token: write
+    steps:
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: jest-report-main
+          path: ${{ github.workspace }}/app/coverage/report.json

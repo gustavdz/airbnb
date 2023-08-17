@@ -39,6 +39,7 @@ jobs:
       - name: Download Coverage
         uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: deploy-to-production.yml
           name: jest-report-main
           path: ${{ github.workspace }}/server/jest-report-main
       - name: Jest Coverage Report
